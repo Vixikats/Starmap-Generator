@@ -31,8 +31,8 @@ var connections = [];
 var constellations = [];
 var conn_color = '#555599';
 var sys_color = '#ffffff';
-var SYSTEM_COUNT = 200;
-var SYSTEM_DIST = 1200;
+var SYSTEM_COUNT = 250;
+var SYSTEM_DIST = 800;
 var PATH_DIST_THRESHOLD = 5;
 var CONN_TRAFFIC_MAX = 0;
 var CONN_TRAFFIC_MIN = Infinity;
@@ -236,7 +236,7 @@ function connectSystems() {
 			var conn = new Connection(sys,trg);
 			var connpath = new ConnPath(conn,path.length);
 			count++
-			if(path.length/conn.dist>=connpath.getThreshold()) {
+			if(path.length/conn.dist>=PATH_DIST_THRESHOLD) {
 				paths.push(connpath);
 			}
 		}
@@ -249,7 +249,7 @@ function connectSystems() {
 		for(var i=0; i<paths.length; i++) {
 			var path = paths[i];
 			path.length = getPath(path.conn.sysA,path.conn.sysB).length;
-			if((path.length/path.conn.dist)<path.getThreshold()) {
+			if((path.length/path.conn.dist)<PATH_DIST_THRESHOLD) {
 				paths.remove(path);
 				i--;
 			}
@@ -285,7 +285,7 @@ function setTradeRoutes() {
 
 function setClusters() {
 	var unclustered = systems.copy();
-	var radius = 1200;
+	var radius = SYSTEM_DIST;
 	var cluster_min = 4;
 	while(unclustered.length) {
 		var start = unclustered.shift();
@@ -516,7 +516,7 @@ window.onload = function() {
 	connectSystems();
 	setTradeRoutes();
 	setSystemNames();
-	setClusters();
+	//setClusters();
 	//Setup mouse events
 	$('#canvas').on('mousedown',mouseDown);
 	$('#canvas').on('mouseup',mouseUp);
