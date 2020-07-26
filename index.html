@@ -383,6 +383,7 @@ function renderScreen() {
 		render.stroke();
 	}
 	//draw systems (simple)
+	/*
 	for(var i=0; i<systems.length; i++) {
 		var s = systems[i];
 		render.fillStyle = 'rgba('+s.color.r+','+s.color.g+','+s.color.b+','+s.color.a+')';
@@ -406,8 +407,8 @@ function renderScreen() {
 		render.strokeText(s.name, pos.x, pos.y-(apparent_size+10));
 		render.fillText(s.name, pos.x, pos.y-(apparent_size+10));
 	}
+	*/
 	//draw systems (complex)
-	/*
 	for(var i=0; i<systems.length; i++) {
 		var s = systems[i];
 		render.fillStyle = 'rgba('+s.color.r+','+s.color.g+','+s.color.b+','+s.color.a+')';
@@ -431,7 +432,6 @@ function renderScreen() {
 		render.strokeText(s.name+' ('+s.type+' '+s.class+')', pos.x, pos.y-(apparent_size+10));
 		render.fillText(s.name+' ('+s.type+' '+s.class+')', pos.x, pos.y-(apparent_size+10));
 	}
-	*/
 	//draw constellation names
 	
 	render.font = '20px Arial';
@@ -510,7 +510,13 @@ function rngTest() {
 
 window.onload = function() {
 	var seed = Number(getURIVar('seed'));
+	var _DIST = Number(getURIVar('dist'));
+	var _PATH = Number(getURIVar('path'));
+	var _COUNT = Number(getURIVar('count'));
 	if(Number.isInteger(seed)) LCG.setSeed(seed);
+	if(_DIST) SYSTEM_DIST = _DIST;
+	if(_COUNT) SYSTEM_COUNT = _COUNT;
+	if(_PATH) PATH_DIST_THRESHOLD = _PATH;
 	//spawn random systems
 	spawnSystems(SYSTEM_COUNT);
 	connectSystems();
