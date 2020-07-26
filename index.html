@@ -650,16 +650,19 @@ function updateMap() {
 
 function updateCount() {
 	SYSTEM_COUNT = Number($('#count').val());
+	console.log(SYSTEM_COUNT);
 	updateURI();
 }
 
 function updateDist() {
 	SYSTEM_DIST = Number($('#dist').val());
+	console.log(SYSTEM_DIST);
 	updateURI();
 }
 
 function updatePath() {
 	PATH_DIST_THRESHOLD = Number($('#path').val());
+	console.log(PATH_DIST_THRESHOLD);
 	updateURI();
 }
 
