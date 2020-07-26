@@ -12,12 +12,89 @@
 		}
 		#canvas {
 			position: relative;
+			z-index: 1;
 			width: 100%;
 			height: 100%;
+		}
+		.variable {
+			position: absolute;
+			z-index: 5;
+			left: 10px;
+			color: white;
+			font-family: sans-serif;
+			padding: 0px;
+		}
+		.seed {
+			top: 10px;
+		}
+		.count {
+			top: 50px;
+		}
+		.dist {
+			top: 90px;
+		}
+		.path {
+			top: 130px;
+		}
+		.generate {
+			top: 170px;
+		}
+		.random {
+			top: 200px;
+		}
+		input {
+			position: relative;
+			width: 100px;
+			height: 30px;
+			background-color: rgb(25,25,25);
+			border-color: white;
+			border-width: 2px;
+			color: white;
+			padding: 5px;
+			border-radius: 10px;
+		}
+		#generate {
+			width: 150px;
+			height: 30px;
+			background-color: rgb(50, 50, 50);
+			border-width: 2px;
+			color: white;
+		}
+		#random {
+			top: 10px;
+		}
+		#seed {
+			width: 150px;
+		}
+		:disabled {
+			opacity: 0.5;
 		}
 	</style>
 </head>
 <body>
+	<div class='variable seed'>
+		<label>Seed:<label>
+		<input id='seed' type='number'>
+	</div>
+	<div class='variable count'>
+		<label>Star Count:<label>
+		<input id='count' type='number'>
+	</div>
+	<div class='variable dist'>
+		<label>Distance Threshold:<label>
+		<input id='dist' type='number'>
+	</div>
+	<div class='variable path'>
+		<label>Path Threshold:<label>
+		<input id='path' type='number'>
+	</div>
+	<div class='variable generate'>
+			<button id='generate'>Generate</button>
+	</div>
+	<div class='variable random'>
+		<label>Random Seed</label>
+		<input type='checkbox' id='random'>
+	</div>
 	<canvas id='canvas'></canvas>
 </body>
 <script>
@@ -25,6 +102,7 @@ var canvas = $('#canvas').get(0);
 canvas.width = $('#canvas').width();
 canvas.height = $('#canvas').height();
 var render = canvas.getContext('2d');
+var render_interval;
 var bg_color = '#000000';
 var systems = [];
 var connections = [];
@@ -45,6 +123,7 @@ var RMB_DOWN = false;
 var WORLD_OFFSET = new Vertex(-canvas.width/2, -canvas.height/2);
 var player = new Player();
 var LCG = new LCGRandom(Math.floor(Math.random()*0xffffffff));
+
 
 function spawnSystems(n) {
 	//Square map
@@ -508,34 +587,80 @@ function rngTest() {
 	}
 }
 
-window.onload = function() {
-	var seed = Number(getURIVar('seed'));
-	var _DIST = Number(getURIVar('dist'));
-	var _PATH = Number(getURIVar('path'));
-	var _COUNT = Number(getURIVar('count'));
-	if(Number.isInteger(seed)) LCG.setSeed(seed);
-	if(_DIST) SYSTEM_DIST = _DIST;
-	if(_COUNT) SYSTEM_COUNT = _COUNT;
-	if(_PATH) PATH_DIST_THRESHOLD = _PATH;
-	//spawn random systems
+function updatePage() {
+	var variables = '?count='+$('#count').val()+'&'+'dist='+$('#dist').val()+'&'+'path='+$('#path').val();
+	if(isRandom()) {
+		variables += '&seed='+(Math.floor(Math.random()*0xffffffff))+'&random=true';
+	}
+	else {
+		variables += '&seed='+$('#seed').val();
+	}
+	window.location.replace(window.location.hostname+window.location.pathname+variables);
+}
+
+function toggleRandomSeed() {
+	if(isRandom()) {$('#seed').prop('disabled', true);}
+	else {$('#seed').prop('disabled', false);}
+}
+
+function isRandom() {
+	return $('#random').prop('checked');
+}
+
+function generateStarmap() {
 	spawnSystems(SYSTEM_COUNT);
 	connectSystems();
 	setTradeRoutes();
 	setSystemNames();
 	//setClusters();
 	//Setup mouse events
-	$('#canvas').on('mousedown',mouseDown);
-	$('#canvas').on('mouseup',mouseUp);
-	$('#canvas').on('mousemove',mouseMove);
-	$('#canvas').on('wheel',updateZoom);
-	$('#canvas').on('contextmenu',function(event){event.preventDefault();});
 	//fixing camera
 	camera.offset.x = -(canvas.width/2);
 	camera.offset.y = -(canvas.height/2);
 	camera.pos.x = canvas.width/2;
 	camera.pos.y = canvas.height/2;
 	//render systems and then connections
-	var render_interval = setInterval(renderLoop,(30/1000));
+	render_interval = setInterval(renderLoop,(30/1000));
+}
+
+window.onload = function() {
+	clearScreen();
+	var seed_uri = getURIVar('seed');
+	var seed;
+	if(seed_uri!=null) seed = Number(seed_uri);
+	else {
+		seed = Math.floor(Math.random()*0xffffffff);
+		$('#random').prop('checked', true);
+		$('#seed').prop('disabled', true);
+	}
+	var _DIST = Number(getURIVar('dist'));
+	var _PATH = Number(getURIVar('path'));
+	var _COUNT = Number(getURIVar('count'));
+	var _RANDOM = Boolean(getURIVar('random'));
+	if(Number.isInteger(seed)) LCG.setSeed(seed);
+	if(_RANDOM) {
+		$('#random').prop('checked', true);
+		$('#seed').prop('disabled', true);
+	}
+	if(_DIST) SYSTEM_DIST = _DIST;
+	if(_COUNT) SYSTEM_COUNT = _COUNT;
+	if(_PATH) PATH_DIST_THRESHOLD = _PATH;
+	//Setup mouse events
+	$('#canvas').on('mousedown',mouseDown);
+	$('#canvas').on('mouseup',mouseUp);
+	$('#canvas').on('mousemove',mouseMove);
+	$('#canvas').on('wheel',updateZoom);
+	$('#canvas').on('contextmenu',function(event){event.preventDefault();});
+	$('#generate').on('click',updatePage);
+	$('#random').on('change',toggleRandomSeed);
+
+	//Setup variables
+	$('#seed').val(LCG.getSeed());
+	$('#count').val(SYSTEM_COUNT);
+	$('#dist').val(SYSTEM_DIST);
+	$('#path').val(PATH_DIST_THRESHOLD);
+
+	generateStarmap();
 }
 </script>
 </html>

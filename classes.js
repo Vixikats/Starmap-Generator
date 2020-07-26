@@ -231,6 +231,7 @@ function getURIVar(trg) {
 	var uri = window.location.href;
 	if(uri.indexOf(trg+'=')==-1) return;
 	var vars = uri.slice(uri.indexOf('?')+1);
+	if(vars.indexOf(trg+'=')==-1) return null;
 	var find = vars.slice(vars.indexOf(trg+'=')+trg.length+1);
 	var next = find.indexOf('&');
 	console.log(find);
@@ -359,14 +360,17 @@ function LCGRandom(seed=0) {
 	this.mod = Math.pow(2,61)-1;
 	this.mult = 4827107;
 	this.inc = 13;
+	this.seed;
 	this.random = function() {
 		this.state = (this.state*this.mult+this.inc)%this.mod;
 		return this.state/this.mod;
 	}
 	this.setSeed = function(seed) {
+		this.seed = seed;
 		this.state = seed + this.inc;
 		this.random();
 	}
+	this.getSeed = function() {return this.seed;}
 	this.setSeed(seed);
 }
 
