@@ -85,6 +85,24 @@
 			color: white;
 			font-family: sans-serif;
 		}
+		#reset {
+			position:absolute;
+			z-index: 5;
+			bottom: 10px;
+			right: 10px;
+			width: 150px;
+			height: 30px;
+			background-color:rgb(50, 50, 50);
+			border-width: 2px;
+			color: white;
+		}
+		#reset:hover {
+			background-color: rgb(75,75,75);
+		}
+		#reset:active {
+			background-color: white;
+			color: black;
+		}
 	</style>
 </head>
 <body>
@@ -114,6 +132,9 @@
 	<div class='help'>
 		<p>Left click and drag to move around the map.</p>
 		<p>Use the mouse wheel to zoom in and out.</p> 
+	</div>
+	<div class='reset'>
+		<button id='reset'>Reset Camera Position</button>
 	</div>
 	<canvas id='canvas'></canvas>
 </body>
@@ -683,6 +704,15 @@ function updatePath() {
 	updateURI();
 }
 
+function resetZoom() {
+	camera.zoom = 1;
+	camera.zoom_level = 1;
+	camera.offset.x = -(canvas.width/2);
+	camera.offset.y = -(canvas.height/2);
+	camera.pos.x = canvas.width/2;
+	camera.pos.y = canvas.height/2;
+}
+
 window.onload = function() {
 	var seed = Number(getURIVar('seed'));
 	var _DIST = Number(getURIVar('dist'));
@@ -702,6 +732,7 @@ window.onload = function() {
 	$('#count').on('change',updateCount);
 	$('#dist').on('change',updateDist);
 	$('#path').on('change',updatePath);
+	$('#reset').on('click',resetZoom);
 
 	//Setup variables
 	if(Number.isInteger(seed)) LCG.setSeed(seed);
