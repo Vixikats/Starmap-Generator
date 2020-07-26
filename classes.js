@@ -354,23 +354,23 @@ function getPath(sys, trg) { //A* pathfinding algorithm
 	return rtrn;
 }
 
-function LCGRandom(seed=0) {
+function LCGRandom(s=0) {
 	this.state = 0x4d595df4d0f33173;
 	this.mod = Math.pow(2,61)-1;
 	this.mult = 4827107;
 	this.inc = 13;
-	this.seed;
+	this.seed = s;
 	this.random = function() {
 		this.state = (this.state*this.mult+this.inc)%this.mod;
 		return this.state/this.mod;
 	}
-	this.setSeed = function(seed) {
-		this.seed = seed;
-		this.state = seed + this.inc;
+	this.setSeed = function(s) {
+		this.seed = s;
+		this.state = this.seed + this.inc;
 		this.random();
 	}
 	this.getSeed = function() {return this.seed;}
-	this.setSeed(seed);
+	this.setSeed(s);
 }
 
 function Mouse() {

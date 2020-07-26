@@ -60,13 +60,20 @@
 			border-width: 2px;
 			color: white;
 		}
+		#generate:hover {
+			background-color: rgb(75,75,75);
+		}
+		#generate:active {
+			background-color: white;
+			color: black;
+		}
 		#random {
 			top: 10px;
 		}
 		#seed {
 			width: 150px;
 		}
-		:disabled {
+		#seed:read-only {
 			opacity: 0.5;
 		}
 	</style>
@@ -587,27 +594,34 @@ function rngTest() {
 	}
 }
 
-function updatePage() {
-	var variables = '?count='+$('#count').val()+'&'+'dist='+$('#dist').val()+'&'+'path='+$('#path').val();
-	if(isRandom()) {
-		variables += '&seed='+(Math.floor(Math.random()*0xffffffff))+'&random=true';
-	}
-	else {
-		variables += '&seed='+$('#seed').val();
-	}
-	window.location.href(variables);
+function updateURI() {
+	var variables = '?count='+$('#count').val()+'&dist='+$('#dist').val()+'&path='+$('#path').val()+'&seed='+$('#seed').val();;
+	window.history.replaceState({}, 'variables', variables);
 }
 
 function toggleRandomSeed() {
-	if(isRandom()) {$('#seed').prop('disabled', true);}
-	else {$('#seed').prop('disabled', false);}
+	if(isRandom()) {$('#seed').prop('readonly', true);}
+	else {$('#seed').prop('readonly', false);}
 }
 
 function isRandom() {
 	return $('#random').prop('checked');
 }
 
+function getSeedVal() {
+	return Number($('#seed').val());
+}
+
 function generateStarmap() {
+	LCG.showState = false;
+	//reset all lists back to empty.
+	console.log('generateStarmap: '+$('#seed').val());
+	systems = [];
+	connections = [];
+	constellations = [];
+	CONN_TRAFFIC_MAX = 0;
+	CONN_TRAFFIC_MIN = Infinity;
+	//new generation
 	spawnSystems(SYSTEM_COUNT);
 	connectSystems();
 	setTradeRoutes();
@@ -623,25 +637,22 @@ function generateStarmap() {
 	render_interval = setInterval(renderLoop,(30/1000));
 }
 
-window.onload = function() {
-	clearScreen();
-	var seed_uri = getURIVar('seed');
-	var seed;
-	if(seed_uri!=null) seed = Number(seed_uri);
-	else {
-		seed = Math.floor(Math.random()*0xffffffff);
-		$('#random').prop('checked', true);
-		$('#seed').prop('disabled', true);
+function updateMap() {
+	LCG.showState = true;
+	if(isRandom()) {
+		LCG.setSeed(Math.floor(Math.random()*0xffffffff));
+		$('#seed').val(LCG.getSeed());
+		updateURI();
 	}
+	else {LCG.setSeed(getSeedVal());}
+	generateStarmap();
+}
+
+window.onload = function() {
+	var seed = Number(getURIVar('seed'));
 	var _DIST = Number(getURIVar('dist'));
 	var _PATH = Number(getURIVar('path'));
 	var _COUNT = Number(getURIVar('count'));
-	var _RANDOM = Boolean(getURIVar('random'));
-	if(Number.isInteger(seed)) LCG.setSeed(seed);
-	if(_RANDOM) {
-		$('#random').prop('checked', true);
-		$('#seed').prop('disabled', true);
-	}
 	if(_DIST) SYSTEM_DIST = _DIST;
 	if(_COUNT) SYSTEM_COUNT = _COUNT;
 	if(_PATH) PATH_DIST_THRESHOLD = _PATH;
@@ -651,17 +662,23 @@ window.onload = function() {
 	$('#canvas').on('mousemove',mouseMove);
 	$('#canvas').on('wheel',updateZoom);
 	$('#canvas').on('contextmenu',function(event){event.preventDefault();});
-	$('#generate').on('click',updatePage);
 	$('#random').on('change',toggleRandomSeed);
+	$('#seed').on('change',updateURI);
+	$('#count').on('change',updateURI);
+	$('#dist').on('change',updateURI);
+	$('#path').on('change',updateURI);
 
 	//Setup variables
+	if(Number.isInteger(seed)) LCG.setSeed(seed);
 	$('#seed').val(LCG.getSeed());
 	$('#count').val(SYSTEM_COUNT);
 	$('#dist').val(SYSTEM_DIST);
 	$('#path').val(PATH_DIST_THRESHOLD);
 
-	console.log(window.location.hostname);
-	console.log(window.location.pathname);
+	$('#generate').on('click',updateMap);
+
+	console.log(seed);
+	console.log('Page load: '+$('#seed').val());
 
 	generateStarmap();
 }
