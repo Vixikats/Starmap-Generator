@@ -85,7 +85,7 @@
 	</div>
 	<div class='variable count'>
 		<label>Star Count:<label>
-		<input id='count' type='number'>
+		<input id='count' type='number' min='1'>
 	</div>
 	<div class='variable dist'>
 		<label>Distance Threshold:<label>
@@ -93,7 +93,7 @@
 	</div>
 	<div class='variable path'>
 		<label>Path Threshold:<label>
-		<input id='path' type='number'>
+		<input id='path' type='number' min='1.1'>
 	</div>
 	<div class='variable generate'>
 			<button id='generate'>Generate</button>
@@ -116,8 +116,8 @@ var connections = [];
 var constellations = [];
 var conn_color = '#555599';
 var sys_color = '#ffffff';
-var SYSTEM_COUNT = 250;
-var SYSTEM_DIST = 800;
+var SYSTEM_COUNT = 100;
+var SYSTEM_DIST = 1200;
 var PATH_DIST_THRESHOLD = 5;
 var CONN_TRAFFIC_MAX = 0;
 var CONN_TRAFFIC_MIN = Infinity;
@@ -649,7 +649,9 @@ function updateMap() {
 }
 
 function updateCount() {
-	SYSTEM_COUNT = Number($('#count').val());
+	var count = Number($('#path').val());
+	if(count<1) count = 1;
+	SYSTEM_COUNT = count;
 	console.log(SYSTEM_COUNT);
 	updateURI();
 }
@@ -661,7 +663,9 @@ function updateDist() {
 }
 
 function updatePath() {
-	PATH_DIST_THRESHOLD = Number($('#path').val());
+	var dist = Number($('#path').val());
+	if(dist<1.1) dist = 1.1;
+	PATH_DIST_THRESHOLD = dist;
 	console.log(PATH_DIST_THRESHOLD);
 	updateURI();
 }
