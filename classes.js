@@ -234,7 +234,6 @@ function getURIVar(trg) {
 	if(vars.indexOf(trg+'=')==-1) return null;
 	var find = vars.slice(vars.indexOf(trg+'=')+trg.length+1);
 	var next = find.indexOf('&');
-	console.log(find);
 	if(next==-1) return find;
 	else return find.slice(0, next);
 }
