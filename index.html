@@ -648,6 +648,21 @@ function updateMap() {
 	generateStarmap();
 }
 
+function updateCount() {
+	SYSTEM_COUNT = Number($('#count').val());
+	updateURI();
+}
+
+function updateDist() {
+	SYSTEM_DIST = Number($('#dist').val());
+	updateURI();
+}
+
+function updatePath() {
+	PATH_DIST_THRESHOLD = Number($('#path').val());
+	updateURI();
+}
+
 window.onload = function() {
 	var seed = Number(getURIVar('seed'));
 	var _DIST = Number(getURIVar('dist'));
@@ -664,9 +679,9 @@ window.onload = function() {
 	$('#canvas').on('contextmenu',function(event){event.preventDefault();});
 	$('#random').on('change',toggleRandomSeed);
 	$('#seed').on('change',updateURI);
-	$('#count').on('change',updateURI);
-	$('#dist').on('change',updateURI);
-	$('#path').on('change',updateURI);
+	$('#count').on('change',updateCount);
+	$('#dist').on('change',updateDist);
+	$('#path').on('change',updatePath);
 
 	//Setup variables
 	if(Number.isInteger(seed)) LCG.setSeed(seed);
@@ -676,9 +691,6 @@ window.onload = function() {
 	$('#path').val(PATH_DIST_THRESHOLD);
 
 	$('#generate').on('click',updateMap);
-
-	console.log(seed);
-	console.log('Page load: '+$('#seed').val());
 
 	generateStarmap();
 }
