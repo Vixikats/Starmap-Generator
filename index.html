@@ -76,6 +76,15 @@
 		#seed:read-only {
 			opacity: 0.5;
 		}
+		.help {
+			position: absolute;
+			z-index: 5;
+			text-align:right;
+			top: 10px;
+			right: 10px;
+			color: white;
+			font-family: sans-serif;
+		}
 	</style>
 </head>
 <body>
@@ -101,6 +110,10 @@
 	<div class='variable random'>
 		<label>Random Seed</label>
 		<input type='checkbox' id='random'>
+	</div>
+	<div class='help'>
+		<p>Left click and drag to move around the map.</p>
+		<p>Use the mouse wheel to zoom in and out.</p> 
 	</div>
 	<canvas id='canvas'></canvas>
 </body>
