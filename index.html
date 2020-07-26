@@ -595,7 +595,7 @@ function updatePage() {
 	else {
 		variables += '&seed='+$('#seed').val();
 	}
-	window.location.replace(window.location.hostname+window.location.pathname+variables);
+	window.location.replace(variables);
 }
 
 function toggleRandomSeed() {
